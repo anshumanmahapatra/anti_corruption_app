@@ -211,13 +211,11 @@ class FormScreenState extends State<FormScreen> {
                     _buildPhoneNumber(),
                     _buildadditionaldescription(),
                     SizedBox(height: 50),
-                    ElevatedButton(
+                    RaisedButton(
+                      color: Colors.orange,
                       child: Text(
                         'Submit',
                         style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.orange,
                       ),
                       onPressed: () {
                         createFormOnline();

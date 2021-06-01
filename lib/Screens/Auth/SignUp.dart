@@ -1,11 +1,5 @@
-import 'package:anti_corruption_app_final/Helper/Service/AuthServices.dart';
-import 'package:anti_corruption_app_final/Helper/Service/FirebaseOperation.dart';
-import 'package:anti_corruption_app_final/Helper/Utils/Utils.dart';
-import 'package:anti_corruption_app_final/Helper/Widgets/HelperWidgets.dart';
-import 'package:anti_corruption_app_final/Screens/Auth/Login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -15,8 +9,8 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool showPassword;
-  String name, email, password;
+
+  String _name, _email, _password;
 
   checkAuthentication() async {
     _auth.authStateChanges().listen((user) async {
@@ -30,9 +24,24 @@ class _SignUpState extends State<SignUp> {
   void initState() {
     super.initState();
     this.checkAuthentication();
-    showPassword = true;
   }
 
+  signUp() async {
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+
+      try {
+        UserCredential user = (await _auth.createUserWithEmailAndPassword(
+            email: _email, password: _password)) ;
+        if (user != null) {
+          await _auth.currentUser.updateProfile(displayName: _name);
+        }
+      } catch (e) {
+        showError(e.message);
+        print(e);
+      }
+    }
+  }
 
   showError(String errorMessage) {
     showDialog(
@@ -42,7 +51,7 @@ class _SignUpState extends State<SignUp> {
             title: Text('ERROR'),
             content: Text(errorMessage),
             actions: <Widget>[
-              TextButton(
+              FlatButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -50,10 +59,6 @@ class _SignUpState extends State<SignUp> {
             ],
           );
         });
-  }
-
-  navigateToLogin() async {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login()));
   }
 
   @override
@@ -75,12 +80,6 @@ class _SignUpState extends State<SignUp> {
                     key: _formKey,
                     child: Column(
                       children: <Widget>[
-                        GestureDetector(
-                          child: Provider.of<HelperWidgets>(context, listen: false).showCircleAvatar(context),
-                          onTap: () {
-                            Provider.of<SignUpUtils>(context, listen: false).selectAvatarOptionSheet(context);
-                          },
-                        ),
                         Container(
                           child: TextFormField(
                               validator: (val) => val.isEmpty ? "Enter Name" : null,
@@ -88,10 +87,7 @@ class _SignUpState extends State<SignUp> {
                                 labelText: 'Name (Enter a funny or fictious name)',
                                 prefixIcon: Icon(Icons.person),
                               ),
-                            onSaved: (input) {
-                              name = input;
-                            },
-                          ),
+                              onSaved: (input) => _name = input),
                         ),
                         Container(
                           child: TextFormField(
@@ -99,10 +95,7 @@ class _SignUpState extends State<SignUp> {
                               decoration: InputDecoration(
                                   labelText: 'Email',
                                   prefixIcon: Icon(Icons.email)),
-                            onSaved: (input) {
-                              email = input;
-                            },
-                              ),
+                              onSaved: (input) => _email = input),
                         ),
                         Container(
                           child: TextFormField(
@@ -110,64 +103,23 @@ class _SignUpState extends State<SignUp> {
                               decoration: InputDecoration(
                                 labelText: 'Password',
                                 prefixIcon: Icon(Icons.lock),
-                                suffix: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      showPassword = !showPassword;
-                                    });
-                                  },
-                                  child: showPassword ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
-                                ),
                               ),
-                              obscureText: showPassword,
-                            onSaved: (input) {
-                              password = input;
-                            },
-                              ),
+                              obscureText: true,
+                              onSaved: (input) => _password = input),
                         ),
                         SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            if(_formKey.currentState.validate()) {
-                              _formKey.currentState.save();
-                              try{
-                                Provider.of<Authentication>(context, listen: false)
-                                    .createAccount(email, name, password)
-                                    .whenComplete(() {
-                                  Provider.of<FirebaseOperation>(context, listen: false)
-                                      .createUserCollection(context,
-                                      {
-                                        "uid" :  Provider.of<Authentication>(context, listen: false).getUserUid,
-                                        "email" : email,
-                                        "name" : name,
-                                        "img" : Provider.of<SignUpUtils>(context, listen: false).getUserAvatarUrl,
-                                      }
-                                  ).whenComplete(() => Navigator.pushReplacementNamed(context, "/"));
-                                }
-                                );
-
-                              } catch (e) {
-                                showError(e.message);
-                              }
-                            }
-                          },
+                        RaisedButton(
+                          padding: EdgeInsets.fromLTRB(70, 10, 70, 10),
+                          onPressed: signUp,
                           child: Text('SignUp',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20.0,
                                   fontWeight: FontWeight.bold)),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.fromLTRB(70, 10, 70, 10),
-                            primary: Colors.orange,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
+                          color: Colors.orange,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
                           ),
-                        ),
-                        SizedBox(height: 7,),
-                        GestureDetector(
-                          child: Text('Already have an Account? Click here'),
-                          onTap: navigateToLogin,
                         )
                       ],
                     ),

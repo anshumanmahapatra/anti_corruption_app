@@ -1,16 +1,12 @@
-import 'dart:async';
-
-import 'package:anti_corruption_app_final/Helper/Constants/youtubeConstants.dart';
-import 'package:anti_corruption_app_final/Helper/Widgets/SlideIndicator.dart';
-import 'package:anti_corruption_app_final/Screens/testData.dart';
+import '../../Helper/Widgets/RequiredWidgets.dart';
+import '../../Helper/widgets/YoutubeVideoTile.dart';
+import '../../Screens/Forum/ForumHomePage.dart';
+import '../../Screens/MachineLearning/MachineLearning.dart';
+import '../../Screens/Home/ProfilePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../Helper/Constants/carouselConstansts.dart';
-import '../../Helper/widgets/YoutubeVideoTile.dart';
-import '../../Screens/Forum/ForumHomePage.dart';
-import '../../Screens/Home/ProfilePage.dart';
-import '../../Screens/MachineLearning/MachineLearning.dart';
+
 import '../Article/ArticlesPage.dart';
 import '../Complaint/ComplaintHome.dart';
 import '../Quiz/QuizHome.dart';
@@ -21,13 +17,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  var scaffoldKey = GlobalKey<ScaffoldState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User user;
   bool isloggedin = false;
-  var imgList = carouselConstants;
-  PageController pageController = new PageController();
-  List<Map<String, String>> youtubeData = youtubeVideoData;
 
   checkAuthentification() async {
     _auth.authStateChanges().listen((user) {
@@ -60,26 +52,15 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     this.checkAuthentification();
     this.getUser();
-    Timer.periodic( Duration(seconds: 3), (timer) {
-        double nextPage = pageController.page + 1;
-        if(pageController.page == imgList.length - 1) {
-          pageController.animateToPage(
-              0,
-              duration: Duration(seconds: 1), curve: Curves.fastOutSlowIn);
-        }
-        else {
-          pageController.animateToPage(
-              nextPage.toInt(),
-              duration: Duration(seconds: 1), curve: Curves.fastOutSlowIn);
-        }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      key: scaffoldKey,
+        appBar: AppBar(
+          title: appBar(context, "Anti Corruption App"),
+          backgroundColor: Colors.orange,
+        ),
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,
@@ -101,9 +82,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ProfileView(
-                                            userName: user.displayName,
-                                            emailId: user.email,
-                                          )));
+                                        userName: user.displayName,
+                                        emailId: user.email,
+                                      )));
                             },
                             child: CircleAvatar(
                               backgroundColor: Colors.blue,
@@ -120,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Spacer(),
-                          Text("GABBAR",
+                          Text("Anti Corruption App",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 23,
@@ -276,34 +257,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: Row(
                   children: <Widget>[
                     Icon(
-                      Icons.article,
-                      size: 31,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        'Test Page',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => TestData()));
-                },
-              ),
-              Divider(
-                thickness: 1,
-                color: Colors.grey,
-              ),
-              ListTile(
-                title: Row(
-                  children: <Widget>[
-                    Icon(
                       Icons.settings,
                       size: 31,
                     ),
@@ -348,116 +301,32 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        body: CustomScrollView(
-          slivers: <Widget>[
-            SliverAppBar(
-              toolbarHeight: 55,
-              title: Text("Home",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
-                ),
-              ),
-              backgroundColor: Colors.orange,
-              brightness: Brightness.dark,
-              elevation: 0,
-              leading: GestureDetector(
-                child: Icon(
-                  Icons.menu,
-                  color: Colors.white,
-                ),
-                onTap: () {
-                  scaffoldKey.currentState.openDrawer();
-                },
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: SizedBox(height: 20,),
-            ),
-            SliverToBoxAdapter(
-              child: Row(
-                children: [
-                  SizedBox(width: 15,),
-                  Text("Trending",
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                      fontWeight: FontWeight.w600,
-                      fontSize: 25,
-                    ),
+        body: Container(
+          child: isloggedin == false
+              ? Container(
+            child: Center(child: CircularProgressIndicator()),
+          )
+              : SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                Container(
+                  height: 300,
+                  child: Image(
+                    image: AssetImage("images/welcome.jpg"),
+                    fit: BoxFit.contain,
                   ),
-                ],
-              ),),
-            SliverToBoxAdapter(
-              child: SizedBox(height: 15,),
+                ),
+                YoutubeVideoTile(img: "images/yt1.jpg", title: "Here Are 10 Ways to Fight Corruption", postUrl: "https://youtu.be/vx2773eSbec", channelName: 'World Bank', logo: "images/ytlogo1.jpg",),
+                SizedBox(height: 15,),
+                YoutubeVideoTile(img: "images/yt2.jpg", title: "How does corruption affect you? | Transparency International", postUrl: "https://youtu.be/FYorzlkCWYo" , channelName: 'Transparency International', logo: "images/ytlogo4.jpg",),
+                SizedBox(height: 15,),
+                YoutubeVideoTile(img: "images/yt3.jpg", title: "Corruption Perceptions Index 2019 | Transparency International", postUrl: "https://youtu.be/xBYLnMCWqiA", channelName: 'Transparency International', logo: "images/ytlogo4.jpg",),
+                SizedBox(height: 15,),
+                YoutubeVideoTile(img: "images/yt4.jpg", title: "Exporting Corruption Report 2020 (With Subs) | Transparency International", postUrl: "https://youtu.be/A_RO-JEgGVs", channelName: 'Transparency International', logo: "images/ytlogo4.jpg",),
+                SizedBox(height: 15,),
+              ],
             ),
-            SliverToBoxAdapter(
-              child: LimitedBox(
-                maxWidth: MediaQuery.of(context).size.width *.90,
-                maxHeight: 200,
-                child: PageView.builder(
-                      controller: pageController,
-                        itemCount: imgList.length,
-                        itemBuilder: (BuildContext context, index) {
-                          return Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
-                              child: Container(
-                                child: Image.asset(
-                                  imgList[index],
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
-                            ),
-                          );
-                        }),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: SizedBox(height:20,),
-            ),
-            SliverToBoxAdapter(
-              child: SlideIndicator(
-                pageController: pageController,
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: SizedBox(height: 20,),
-            ),
-            SliverToBoxAdapter(
-              child: Row(
-                children: [
-                  SizedBox(width: 15,),
-                  Text("Videos",
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                      fontWeight: FontWeight.w600,
-                      fontSize: 25,
-                    ),
-                  ),
-                ],
-              ),),
-            SliverToBoxAdapter(
-              child: SizedBox(height: 10,),
-            ),
-            SliverList(
-                delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                    return YoutubeVideoTile(
-                        img: youtubeData[index]["img"],
-                        title: youtubeData[index]["title"],
-                        postUrl: youtubeData[index]["postUrl"],
-                        channelName: youtubeData[index]["channelName"],
-                        logo: youtubeData[index]["logo"]);
-                  },
-                  childCount: youtubeData.length,
-                )),
-            SliverToBoxAdapter(
-              child: SizedBox(height: 20,),
-            ),
-          ],
-         ),
-        );
+          ),
+        ));
   }
 }

@@ -14,6 +14,7 @@ class _QuizzHomeState extends State<QuizzHome> {
   Stream quizStream;
   DatabaseService databaseService = new DatabaseService();
 
+
   Widget quizList() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 24, vertical: 20),

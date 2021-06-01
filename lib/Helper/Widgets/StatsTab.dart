@@ -50,7 +50,6 @@ class StatsTab extends StatelessWidget {
               Text(value,
               style: TextStyle(
                 fontSize: 13,
-                color: upDown == 1 ? Colors.green : Colors.red,
               ),),
             ],
           )

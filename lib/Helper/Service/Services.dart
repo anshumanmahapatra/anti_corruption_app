@@ -1,12 +1,7 @@
-import 'package:anti_corruption_app_final/Helper/Model/UserModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DatabaseService {
-
-  final String uid;
-  Map data;
-  DatabaseService({ this.uid });
-
   Future<void> addQuizData(Map quizData, String quizId) async {
     await FirebaseFirestore.instance
         .collection("Quiz")
@@ -36,7 +31,7 @@ class DatabaseService {
     .catchError((e){
       print(e.toString());
     });
-  } 
+  }
 
   Future<void> addForumData (blogData) async {
     await FirebaseFirestore.instance
@@ -45,41 +40,6 @@ class DatabaseService {
         .catchError( (e) {
           print(e.toString());
     });
-  }
-
-  Future updateUserData( String email, String name) async {
-    return await FirebaseFirestore.instance
-        .collection("Users")
-        .doc(uid)
-        .set(
-      {
-        'Email Id' : email,
-        'User Name' : name,
-        'UID' : uid,
-      }
-    );
-  }
-
-  UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {
-    return UserData(
-        uid: uid,
-        name: snapshot.data()["name"],
-        email: snapshot.data()['email'],
-    );
-  }
-
-  Stream<UserData> get userData {
-    return FirebaseFirestore.instance
-        .collection("Users")
-        .doc(uid)
-        .snapshots()
-        .map(_userDataFromSnapshot);
-  }
-
-  getUserData() async {
-    return await FirebaseFirestore.instance
-        .collection("Users")
-        .snapshots();
   }
 
   getQuizData() async {
@@ -92,7 +52,7 @@ class DatabaseService {
         .collection("Quiz")
         .doc(quizId)
         .collection("QNA")
-        .snapshots();
+        .get();
   }
 
   getForumData() async{
@@ -102,4 +62,18 @@ class DatabaseService {
   }
 }
 
+class AuthService {
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  Future getCurrentUser() async {
+    User user = await _firebaseAuth.currentUser;
+    return user != null ? user.uid : null;
+  }
+
+
+  signOut() async {
+    return await _firebaseAuth.signOut();
+  }
+
+}
 

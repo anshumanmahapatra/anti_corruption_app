@@ -40,62 +40,84 @@ class _YoutubeVideoTileState extends State<YoutubeVideoTile> {
           return;
         }
       },
-      child: Container(
-        padding: EdgeInsets.all(10.0),
-        color: Colors.white,
-        child: Column(
-          children: <Widget>[
-            Container(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: Image.asset(widget.img,
-                  width: MediaQuery.of(context).size.width - 25,
-                  height: 180,
-                  fit: BoxFit.cover,),
+      child: Card(
+        shadowColor: Colors.grey,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(13),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(10.0),
+          width: MediaQuery.of(context).size.width - 12,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                offset: Offset(0, 1),
+                blurRadius: 6.0,
               ),
-            ),
-            SizedBox(height: 5.0),
-            Row(
-              children: <Widget>[
-                Container(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(30),
-                    child: Image.asset(widget.logo,
-                      width: 48,
-                      height: 48,
-                      fit: BoxFit.cover,),
-                  ),
+            ],
+          ),
+          child: Column(
+            children: <Widget>[
+              Container(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: Image.asset(widget.img,
+                    width: 320,
+                    height: 180,
+                    fit: BoxFit.fill,),
                 ),
-                SizedBox(width: 5,),
-                Container(
-                  padding: EdgeInsets.all(7),
-                  width: MediaQuery.of(context).size.width / 1.25 - 15,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        widget.title,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(height: 2,),
-                      Text(
-                        widget.channelName,
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
+              ),
+              // Image(
+              //   width: 320,
+              //   height: 180,
+              //   image: NetworkImage(video.thumbnailUrl),
+              // ),
+              SizedBox(height: 5.0),
+              Row(
+                children: <Widget>[
+                  Container(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: Image.asset(widget.logo,
+                        width: 48,
+                        height: 48,
+                        fit: BoxFit.fill,),
+                    ),
                   ),
-                )
-              ],
-            )
-          ],
+                  SizedBox(width: 7,),
+                  Container(
+                    padding: EdgeInsets.all(7),
+                    width: MediaQuery.of(context).size.width / 1.25 - 15,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          widget.title,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: 2,),
+                        Text(
+                          widget.channelName,
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -1,7 +1,5 @@
-import 'package:anti_corruption_app_final/Helper/Service/AuthServices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'SignUp.dart';
 
@@ -13,12 +11,14 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool showPassword;
+
   String _email, _password;
 
   checkAuthentication() async {
     _auth.authStateChanges().listen((user) {
       if (user != null) {
+        print(user);
+
         Navigator.pushReplacementNamed(context, "/" ); //correction
       }
     });
@@ -28,9 +28,22 @@ class _LoginState extends State<Login> {
   void initState() {
     super.initState();
     this.checkAuthentication();
-    showPassword = true;
   }
 
+  login() async {
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+
+      try {
+        UserCredential user = await _auth.signInWithEmailAndPassword(
+            email: _email, password: _password);
+
+      } catch (e) {
+        showError(e.message);
+        print(e);
+      }
+    }
+  }
 
   showError(String errorMessage) {
     showDialog(
@@ -40,7 +53,7 @@ class _LoginState extends State<Login> {
             title: Text('ERROR'),
             content: Text(errorMessage),
             actions: <Widget>[
-              TextButton(
+              FlatButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -51,7 +64,7 @@ class _LoginState extends State<Login> {
   }
 
   navigateToSignUp() async {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignUp()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUp()));
   }
 
   @override
@@ -85,53 +98,30 @@ class _LoginState extends State<Login> {
                               decoration: InputDecoration(
                                 labelText: 'Password',
                                 prefixIcon: Icon(Icons.lock),
-                                suffix: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      showPassword = !showPassword;
-                                    });
-                                  },
-                                  child: showPassword ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
-                                )
                               ),
-                              obscureText: showPassword,
+                              obscureText: true,
                               onSaved: (input) => _password = input),
                         ),
                         SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            if(_formKey.currentState.validate()) {
-                              _formKey.currentState.save();
-                              try{
-                                Provider.of<Authentication>(context, listen: false)
-                                    .logIntoAccount(_email, _password)
-                                    .whenComplete(() =>  Navigator.pushReplacementNamed(context, "/"));
-                              } catch (e) {
-                                showError(e.message);
-                              }
-                            }
-                          },
+                        RaisedButton(
+                          padding: EdgeInsets.fromLTRB(70, 10, 70, 10),
+                          onPressed: login,
                           child: Text('LOGIN',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20.0,
                                   fontWeight: FontWeight.bold)),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.fromLTRB(70, 10, 70, 10),
-                            primary: Colors.orange,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
+                          color: Colors.orange,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
                           ),
-
                         )
                       ],
                     ),
                   ),
                 ),
-                SizedBox(height: 10,),
                 GestureDetector(
-                  child: Text('Create an Account? Click Here'),
+                  child: Text('Create an Account?'),
                   onTap: navigateToSignUp,
                 )
               ],

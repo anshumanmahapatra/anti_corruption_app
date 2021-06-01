@@ -138,14 +138,12 @@ class Results extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      primary: Colors.orange,
+                  RaisedButton(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    color: Colors.orange,
                     child: Text("Goto Home"),
                     onPressed: () => Navigator.pop(context),
                   ),
